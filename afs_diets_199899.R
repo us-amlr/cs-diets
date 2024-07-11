@@ -1,7 +1,12 @@
 # Read and clean AFS diet data from 1998/99, to import into database
 
+# pak::pkg_install("us-amlr/tamatoamlr")
+
 library(tidyverse)
 library(readxl)
+library(here)
+library(tamatoamlr)
+
 
 #-------------------------------------------------------------------------------
 # Read in and combine the scat and enema data
@@ -9,7 +14,7 @@ library(readxl)
 #----------------------------------------------------------
 # Scat data
 scat.orig <- read_excel(
-  "C:/Users/sam.woodman/Downloads/Fur Seal Diet 1998-99.xls",
+  here("diets_historical_data", "Fur Seal Diet 1998-99.xls"),
   sheet = "Scat Log", skip = 2, 
   col_types = c(rep("text", 5), "date", "date", rep("text", 8))
 )
@@ -27,7 +32,7 @@ which(is.na(scat.orig$`Date Processed`))
 #----------------------------------------------------------
 # Enema data
 enema.orig <- read_excel(
-  "C:/Users/sam.woodman/Downloads/Fur Seal Diet 1998-99.xls",
+  here("diets_historical_data", "Fur Seal Diet 1998-99.xls"),
   sheet = "Enema Log", skip = 2,
   col_types = c(rep("text", 4), "date", "date", rep("text", 8))
 )
@@ -103,7 +108,6 @@ diets <- diets.orig %>%
          sex = if_else(sex == "F?", NA_character_, toupper(sex)), 
          collector = NA_character_, 
          processor = NA_character_,
-         # TODO location
          krill_type = if_else(`Krill?` == "Y", "Yes", "No"),
          fish_type = case_when(
            `Otoliths?` %in% c("Y", "y", "100's") ~ "Yes", 
@@ -120,10 +124,34 @@ diets <- diets.orig %>%
            !is.na(tentative_otolith_id) & !is.na(notes) ~ 
              paste0(notes, "; ", "Tentative otolith ID: ", tentative_otolith_id)
          )) %>% 
+  mutate_location() %>% 
   select(season_name, sample_num, species, sex, sample_type, location, 
          collection_date, collector, process_date, processor, 
          krill_type, fish_type, squid_type, tag, carapace_save, notes)
 
+
+# Confirm that all locations, observers, and tags are in database tables
+beaches <- read.csv(here("reference_tables/beaches.csv")) %>% 
+  select(beach_id = ID, location = name)
+observers <- read.csv(here("reference_tables/observers.csv"))
+tags <- read.csv(here("reference_tables/tags.csv")) %>% 
+  filter(tag_species != "Fur seal" | tag_type != "U-tag") %>% 
+  select(tag_id = ID, tag, species = tag_species)
+
+all(is.na(diets$location) | (diets$location %in% beaches$location))
+all(is.na(diets$collector) | (diets$collector%in% observers$observer))
+all(is.na(diets$processor) | (diets$processor%in% observers$observer))
+all(is.na(diets$tag) | (diets$tag%in% tags$tag))
+
+# # Report the still-invalid locations 
+# table(diets$location[!(is.na(diets$location) | (diets$location %in% beaches$name))])
+
+
+# Get ID columns, ready everything to go into the db
+diets.todb <- diets %>% 
+  left_join(beaches, by = join_by(location)) %>% 
+  left_join(tags, by = join_by(species, tag)) %>% 
+  select(-c(location, tag))
 
 #-------------------------------------------------------------------------------
 # NOTE: no krill carapace length or otolith count data for 1998/99
