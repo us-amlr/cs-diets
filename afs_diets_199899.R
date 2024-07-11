@@ -147,6 +147,7 @@ all(is.na(diets$tag) | (diets$tag%in% tags$tag))
 # table(diets$location[!(is.na(diets$location) | (diets$location %in% beaches$name))])
 
 
+#-------------------------------------------------------------------------------
 # Get ID columns, ready everything to go into the db
 diets.todb <- diets %>% 
   left_join(beaches, by = join_by(location)) %>% 
