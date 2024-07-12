@@ -1,11 +1,9 @@
 library(here)
 library(readxl)
-library(dplyr)
+library(tidyverse)
 read_excel(path = here("diets_historical_data", "Fur Seal Diet 2008-09.xls"), 
            sheet = "Sample Contents_updated", skip = 2, 
            range = "A14:AE114")
-
-?read_excel
 
 SC2008_09_ORIG <- read_excel(
   path = here("diets_historical_data", 
@@ -48,5 +46,10 @@ SC2008_09 <- SC2008_09_ORIG %>%
          Squid_Presence = if_else(Squid_Presence == "Y", "Yes", "No"),
          Collection_Date = as.Date(Collection_Date), 
          Process_Date = as.Date(Process_Date),
-         Female_ID = if_else(Female_ID == "n/a", NA, Female_ID)) %>% 
-  select(Sample_Num: Squid_Presence, Comments: Sex)
+         Female_ID = if_else(Female_ID == "n/a", NA, Female_ID), 
+         Collector = str_sub(Observer_Code, 1, 3), Carapace_Save = "0") %>%
+  select(Sample_Num: Squid_Presence, Collector, Comments: Carapace_Save) %>% 
+  relocate(Sample_Type:Carapace_Save, .before = Comments)
+
+
+?read_excel
