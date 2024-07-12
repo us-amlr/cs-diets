@@ -1,6 +1,6 @@
 library(here)
 library(readxl)
-library(dplyr)
+library(tidyverse)
 read_excel(path = here("diets_historical_data", "Fur Seal Diet 2010-11.xlsx"), 
            sheet = "Sample Contents", skip = 2, 
            range = "A3:AE113")
@@ -43,8 +43,10 @@ SC2010_11 <- SC2010_11_ORIG %>%
          Fish_Presence = if_else(Fish_Presence == "Y", "Yes", "No"), 
          Squid_Presence = if_else(Squid_Presence == "Y", "Yes", "No"), 
          Collection_Date = as.Date(Collection_Date), 
-         Process_Date = as.Date(Process_Date)) %>% 
-  select(Sample_Num: Squid_Presence, Comments: Sex)
+         Process_Date = as.Date(Process_Date), 
+         Collector = str_sub(Observer_Code, 1, 3), Carapace_Save = "0") %>%
+  select(Sample_Num: Squid_Presence, Collector, Comments: Carapace_Save) %>% 
+  relocate(Sample_Type:Carapace_Save, .before = Comments)
 
 #Notes on renaming columns---------------------
 # View(SC2010_11)
