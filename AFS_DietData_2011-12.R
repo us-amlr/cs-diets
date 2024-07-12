@@ -5,7 +5,7 @@ library(stringr)
 SC2011_12_ORIG <- read_excel(
   path = here("diets_historical_data", 
               "Fur Seal Diet 2011-12.xls"), 
-  sheet = "Sample Contents", skip = 13, 
+  sheet = "Sample Contents", skip = 2, 
   range = "A14:AC105", 
   col_types = c("date", "numeric", 
                 "numeric", "date",
@@ -27,9 +27,7 @@ SC2011_12 <- SC2011_12_ORIG %>%
          E.carlsbergi_right_Otolith_Count = right...16,
          G.nicholsi_left_Otolith_Count = left...17, 
          G.nicholsi_right_Otolith_Count = right...18, 
-         # # Notolepis_coatsi = Notolepis coatsi(Error: unexpected symbol in:
-         # "         G.nicholsi_right_Otolith_Count = right...18, 
-         # Notolepis_coatsi = Notolepis coatsi"),
+         Notolepis_coatsi = `Notolepis coatsi`,
          G.sp._eroded = eroded...20,
          E.carlbergi_eroded = eroded...21, 
          E.antarctica._eroded = eroded...22, Unidentified_Otoliths_All = all,
@@ -37,15 +35,17 @@ SC2011_12 <- SC2011_12_ORIG %>%
          Otolith_Slides_Start = ...26, Otolith_Slides_End = ...27, Total_Otoliths = Otoliths, 
          Comments = Comments) %>% 
   #Reassign column types in original dataframe before modifying 
-    select(Sample_Num, Collection_Date: Squid_Presence, Comments) %>%
+  select(Sample_Num, Collection_Date: Squid_Presence, Comments) %>%
   mutate(Sample_Type = "Scat", Species = "Fur seal", Sex = "F",
          Krill_Presence = if_else(Krill_Presence == "Y", "Yes", "No"), 
          Fish_Presence = if_else(Fish_Presence == "Y", "Yes", "No"), 
          Squid_Presence = if_else(Squid_Presence == "Y", "Yes", "No"), 
          Collection_Date = as.Date(Collection_Date), 
          Process_Date = as.Date(Process_Date), 
-         Collector = str_sub(Observer_Code, 1, 3)) %>%  
-  select(Sample_Num: Squid_Presence, Collector, Comments: Sex)
+         Collector = str_sub(Observer_Code, 1, 3), Carapace_Save = "0") %>%
+  select(Sample_Num: Squid_Presence, Collector, Comments: Carapace_Save) %>% 
+  relocate(Sample_Type:Carapace_Save, .before = Comments)
+
 
 
 
