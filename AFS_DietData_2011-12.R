@@ -44,9 +44,9 @@ SC2011_12 <- SC2011_12_ORIG %>%
          Squid_Presence = if_else(Squid_Presence == "Y", "Yes", "No"), 
          Collection_Date = as.Date(Collection_Date), 
          Process_Date = as.Date(Process_Date), 
-         str_subset(DJK, 1, 91)) %>% 
-  select(Sample_Num: Squid_Presence, Comments: Sex)
-DJK <- "Douglas Krause"
+         Collector = str_sub(Observer_Code, 1, 3)) %>%  
+  select(Sample_Num: Squid_Presence, Collector, Comments: Sex)
+
 
 
 #Renaming columns/Notes------

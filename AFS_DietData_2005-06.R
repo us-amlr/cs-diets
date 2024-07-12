@@ -9,9 +9,9 @@ SC2005_06_ORIG <- read_excel(
   path = here("diets_historical_data", "Fur Seal Diet 2005-06.xls"), 
   sheet = "Sample Contents", skip = 2, 
   range = "A4:X115", col_types = c("numeric", "numeric", "date",
-                                     "text", "text", "date",
-                                     rep("text", 4), rep("numeric", 13), 
-                                    "text"))
+                                   "text", "text", "date",
+                                   rep("text", 4), rep("numeric", 13), 
+                                   "text"))
 
 SC2005_06 <- SC2005_06_ORIG %>% 
   rename(Week_Num = `#...1`, 
