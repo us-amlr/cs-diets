@@ -56,7 +56,7 @@ diets <- diets.orig %>%
          krill_type = Krill, fish_type = Fish, squid_type = Squid, 
          tag = `Female Tag Number`, notes = Notes, 
          Composition, Other) %>%
-  # Add yello liquidy context to notes
+  # Add yellow liquidy context to notes
   mutate(notes = case_when(Composition == "yellow liquidy" ~ "yellow liquidy", 
                            Other == "Amphipods" ~ "Amphipods", 
                            .default = notes)) %>% 
