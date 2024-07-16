@@ -22,7 +22,10 @@ SC2002_03 <- SC2002_03_ORIG %>%
     Process_Date = Date...6,
     Krill_Presence = `Krill Obs.`, Fish_Presence = Fish,
     Squid_Presence = Squid,
-    #Include the 4 fish species 1/0 otolith presence?
+    E.antarctica_Presence = E.antarctica,
+    E.carlsbergi_Presence = `E. carlsbergi`,
+    G.nicholsi_Presence = `G. nicholsi`,
+    B.picta_Presence = `B. picta`,
     Krill_Carapaces_Measured = Measured,
     E.antarctica_left_Otolith_Count = left...16, 
     E.antarctica_right_Otolith_Count = right...17,
@@ -38,6 +41,7 @@ SC2002_03 <- SC2002_03_ORIG %>%
     Comments = Notes) %>% 
   select(Sample_Num: Krill_Presence, Fish_Presence, Squid_Presence, Comments) %>%
   mutate(Sample_Type = "Scat", Species = "Fur seal", Sex = "F",
+         Observer_Code = NA, Collector = NA,
          #Krill_Presence = if_else(Krill_Presence == "Y", "Yes", "No"), 
          Fish_Presence = if_else(Fish_Presence == "Y", "Yes", "No"), 
          Squid_Presence = if_else(Squid_Presence == "Y", "Yes", "No"),
