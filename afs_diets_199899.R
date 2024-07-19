@@ -142,9 +142,9 @@ all(is.na(diets$collector) | (diets$collector%in% observers$observer))
 all(is.na(diets$processor) | (diets$processor%in% observers$observer))
 all(is.na(diets$tag) | (diets$tag%in% tags$tag))
 
-# # Report the still-invalid locations 
-# table(diets$location[!(is.na(diets$location) | (diets$location %in% beaches$name))])
-
+# Report the still-invalid locations
+table(diets$location[!(is.na(diets$location) | 
+                         (diets$location %in% beaches$location))])
 
 #-------------------------------------------------------------------------------
 # Get ID columns, ready everything to go into the db
