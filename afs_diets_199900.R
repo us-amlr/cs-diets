@@ -5,6 +5,7 @@
 library(tidyverse)
 library(readxl)
 library(here)
+#pak::pkg_install("us-amlr/tamatoamlr")
 library(tamatoamlr)
 
 

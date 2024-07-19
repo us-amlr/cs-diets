@@ -7,7 +7,6 @@ library(readxl)
 library(here)
 library(tamatoamlr)
 
-
 #-------------------------------------------------------------------------------
 # Read in and combine the scat and enema data
 
