@@ -39,8 +39,7 @@ SC2003_04 <- SC2003_04_ORIG %>%
          Squid_Presence = if_else(Squid_Presence == "Y", "Yes", "No"), 
          Collection_Date = as.Date(Collection_Date), 
          Process_Date = as.Date(Process_Date), 
-         Collector = str_sub(Observer_Code, 1, 3), Carapace_Save = "0") %>%
+         Processor = str_sub(Observer_Code, 1, 3), 
+         Collector = NA_character_, Carapace_Save = "0") %>%
   select(Sample_Num: Squid_Presence, Collector, Comments: Carapace_Save) %>% 
   relocate(Sample_Type:Carapace_Save, .before = Comments)
-
-

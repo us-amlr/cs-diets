@@ -37,8 +37,10 @@ SC2006_07 <- SC2006_07_ORIG %>%
          Fish_Presence = if_else(Fish_Presence == "Y", "Yes", "No"),
          Squid_Presence = if_else(Squid_Presence == "Y", "Yes", "No"),
          Collection_Date = as.Date(Collection_Date), 
-         Process_Date = as.Date(Process_Date),
-         Female_ID = if_else(Female_ID == "-", NA, Female_ID), Collector = 
-           str_sub(Observer_Code, 1, 3), Carapace_Save = "0") %>%
+         Process_Date = as.Date(Process_Date),  
+         Processor = str_sub(Observer_Code, 1, 3), 
+         Collector = NA_character_,
+         Female_ID = if_else(Female_ID == "-", NA, Female_ID), 
+         Carapace_Save = "0") %>%
   select(Sample_Num: Squid_Presence, Collector, Comments: Carapace_Save) %>% 
   relocate(Sample_Type:Carapace_Save, .before = Comments)

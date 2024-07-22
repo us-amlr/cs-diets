@@ -1,6 +1,8 @@
 library(here)
 library(readxl)
 library(tidyverse)
+library(tamatoamlr)
+
 read_excel(path = here("diets_historical_data", "Fur Seal Diet 2010-11.xlsx"), 
            sheet = "Sample Contents", skip = 2, 
            range = "A3:AE113")
@@ -11,16 +13,15 @@ SC2010_11_ORIG <- read_excel(
   sheet = "Sample Contents", skip = 2, 
   range = ("A3:AE113"), 
   col_types = c("date", "numeric", "numeric", "date", 
-                "text", "guess",
-                "date", "text", "text", "text", 
-                "text", rep("numeric", 19), "text")
+                "text", "text",
+                "date", rep("text", 4), rep("numeric", 19), "text")
 )
 SC2010_11 <- SC2010_11_ORIG %>% 
-  rename(Start_Date = DATE, Week_Num = `#...2`, Sample_Num = `#...3`, 
-         Collection_Date = Date...4, Location = Loc, Female_ID = ID,
-         Process_Date = Date...7, Observer_Code = Obs., 
-         Krill_Presence = Krill, Fish_Presence = Fish, Squid_Presence = Squid, 
-         Krill_Carapaces_Measured = Measured, 
+  rename(start_date = DATE, week_num = `#...2`, sample_num = `#...3`, 
+         collection_date = Date...4, location = Loc, female_id = ID,
+         process_date = Date...7, observer_code = Obs., 
+         krill_type = Krill, fish_type = Fish, squid_type = Squid, 
+         krill_carapaces_measured = Measured, 
          E.antarctica_left_Otolith_Count = left...13, 
          E.antarctica_right_Otolith_Count = right...14,
          E.carlsbergi_left_Otolith_Count = left...15, 
@@ -33,21 +34,27 @@ SC2010_11 <- SC2010_11_ORIG %>%
          Notolepis_coatsi_right_Otolith_Count = right...22, 
          G.sp._eroded_left_Otoliths = left...23, 
          G.sp._eroded_right_Otoliths = right...24, 
-         E.ant._Identity_eroded = eroded, Unidentified_Otoliths_All = all, 
-         Squid_Dorsal_Beak_Count = dorsal, Squid_Ventral_Beak_Count = ventral,
-         Otolith_Slides = ...29, Total_Otoliths = Otoliths, 
-         Comments = ...31) %>% 
-  select(Sample_Num: Squid_Presence, Comments) %>%
-  mutate(Sample_Type = "Scat", Species = "Fur seal", Sex = "F",
-         Krill_Presence = if_else(Krill_Presence == "Y", "Yes", "No"), 
-         Fish_Presence = if_else(Fish_Presence == "Y", "Yes", "No"), 
-         Squid_Presence = if_else(Squid_Presence == "Y", "Yes", "No"), 
-         Collection_Date = as.Date(Collection_Date), 
-         Process_Date = as.Date(Process_Date), 
-         Collector = str_sub(Observer_Code, 1, 3), Carapace_Save = "0") %>%
-  select(Sample_Num: Squid_Presence, Collector, Comments: Carapace_Save) %>% 
-  relocate(Sample_Type:Carapace_Save, .before = Comments)
+         E.ant._Identity_eroded = eroded, unidentified_otoliths_all = all, 
+         squid_dorsal_beak_count = dorsal, squid_ventral_beak_count = ventral,
+         otolith_slides = ...29, total_otoliths = Otoliths, 
+         notes = ...31) %>% 
+  select(sample_num: squid_type, notes) %>%
+  mutate(sample_type = "scat", species = "Fur seal", sex = "F",
+         krill_type = if_else(krill_type == "Y", "Yes", "No"), 
+         fish_type = if_else(fish_type == "Y", "Yes", "No"), 
+         squid_type = if_else(squid_type == "Y", "Yes", "No"), 
+         collection_date = as.Date(collection_date), 
+         process_date = as.Date(process_date), 
+         processor = NA_character_, #str_sub(observer_code, 1, 3), 
+         collector = NA_character_, carapace_save = case_when(
+           is.na(notes) ~ 0, 
+           str_detect(tolower(notes), "carapaces saved") ~ 1, 
+           .default = 0)) %>%
+  select(sample_num: squid_type, collector, notes: carapace_save) %>% 
+  relocate(sample_type:carapace_save, .before = notes)
 
+#NS values are marked as NA so do a case when for specific coll-date (cell#) 
+#and change it to its respective date
 #Notes on renaming columns---------------------
 # View(SC2010_11)
 # SC2010_11$DATE

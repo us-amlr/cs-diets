@@ -32,13 +32,15 @@ SC2001_02 <- SC2001_02_ORIG %>%
          Squid_Beaks_Total_Counts = Beaks,
          Comments = Obs.) %>%
   mutate(Sample_Type = "Scat", Species = "Fur seal", Sex = "F",
-         Observer_Code = NA, Collector = NA,
+         Observer_Code = NA,
          Krill_Presence = if_else(Krill_Presence == "Y", "Yes", "No"), 
          Fish_Presence = if_else(Fish_Presence == "Y", "Yes", "No"), 
          Squid_Presence = if_else(Squid_Presence == "Y", "Yes", "No"),
          Female_ID = if_else(Female_ID == "\"-\"", NA, Female_ID),
          Collection_Date = as.Date(Collection_Date), 
          Process_Date = as.Date(Process_Date), 
+         Processor = str_sub(Observer_Code, 1, 3), 
+         Collector = NA_character_,
          Carapace_Save = "0") %>%
   select(Sample_Num: Squid_Presence,
          Comments: Carapace_Save) %>% 
