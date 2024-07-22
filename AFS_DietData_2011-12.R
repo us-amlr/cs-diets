@@ -191,7 +191,7 @@ diets2011_12_todb <- SC2011_12 %>%
 # T & T = TRUE
 # T & F = FALSE
 # F & F = FALSE
-#(If a TRUE statemnt if present anywhere in the OR operator comparison then its
+#(If a TRUE statement if present anywhere in the OR operator comparison then its
 # output will = TRUE)
 #creating diets data frame----
 
