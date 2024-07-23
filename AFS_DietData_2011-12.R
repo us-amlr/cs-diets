@@ -2,6 +2,7 @@ library(here)
 library(readxl)
 library(dplyr)
 library(stringr)
+#pak::pkg_install("us-amlr/tamatoamlr")
 library(tamatoamlr)
 
 SC2011_12_ORIG <- read_excel(

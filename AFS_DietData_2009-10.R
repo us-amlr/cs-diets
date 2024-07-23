@@ -49,7 +49,8 @@ SC2009_10 <- SC2009_10_ORIG %>%
            is.na(notes) ~ 0,
            str_detect(tolower(notes), "carapaces saved") ~ 1,
            .default = 0)) %>%
-  select(sample_num: squid_type, processor, collector, notes: carapace_save)
+  select(sample_num: squid_type, processor, collector, notes: carapace_save) %>% 
+  mutate_location()
 
 
 table(SC2009_10$sample_num, useNA = "ifany")

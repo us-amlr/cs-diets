@@ -30,16 +30,18 @@ SC2000_01 <- SC2000_01_ORIG %>%
          G.sp._eroded_right_Otoliths = right...18,
          Unidentified_Otoliths_All = Unid., 
          Squid_Dorsal_Beak_Count = upper, Squid_Ventral_Beak_Count = lower,
-         Comments = Obs.) %>% 
-mutate(Sample_Type = "Scat", Species = "Fur seal", Sex = "F",
-       Observer_Code = NA, Collector = NA,
+         Sample_Type = Type, Comments = Obs.) %>% 
+mutate(Species = "Fur seal", Sex = "F",
+       Observer_Code = NA,
        Krill_Presence = if_else(Krill_Presence == "Y", "Yes", "No"), 
        Fish_Presence = if_else(Fish_Presence == "Y", "Yes", "No"), 
        Squid_Presence = if_else(Squid_Presence == "Y", "Yes", "No"),
        Female_ID = if_else(Female_ID == "-", NA, Female_ID),
        Collection_Date = as.Date(Collection_Date), 
        Process_Date = as.Date(Process_Date), 
+       Processor = str_sub(Observer_Code, 1, 3), 
+       Collector = NA_character_,
        Carapace_Save = "0") %>%
   select(Sample_Num: Squid_Presence,
-         Comments: Carapace_Save) %>% 
-  relocate(Sample_Type:Carapace_Save, Type:Month, .before = Comments)
+         Comments, Sample_Type, Species: Carapace_Save) %>% 
+  relocate(Sample_Type:Carapace_Save, .before = Comments)

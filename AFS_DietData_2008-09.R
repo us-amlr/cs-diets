@@ -1,6 +1,7 @@
 library(here)
 library(readxl)
 library(tidyverse)
+# pak::pkg_install("us-amlr/tamatoamlr")
 library(tamatoamlr)
 read_excel(path = here("diets_historical_data", "Fur Seal Diet 2008-09.xls"), 
            sheet = "Sample Contents_updated", skip = 2, 

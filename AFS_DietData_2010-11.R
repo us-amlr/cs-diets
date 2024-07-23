@@ -43,15 +43,21 @@ SC2010_11 <- SC2010_11_ORIG %>%
          krill_type = if_else(krill_type == "Y", "Yes", "No"), 
          fish_type = if_else(fish_type == "Y", "Yes", "No"), 
          squid_type = if_else(squid_type == "Y", "Yes", "No"), 
-         collection_date = as.Date(collection_date), 
+         location = if_else(location == "Vei?" | location == "NS", NA, location),
+         # collection_date = as.Date(collection_date), 
+         collection_date = case_when(
+           sample_num == 91 ~ ymd("2011-02-20"),
+           sample_num %in% c(92:95) ~ ymd("2011-02-19"),
+           .default = as.Date(collection_date)),
          process_date = as.Date(process_date), 
          processor = NA_character_, #str_sub(observer_code, 1, 3), 
-         collector = NA_character_, carapace_save = case_when(
+         collector = NA_character_, 
+         carapace_save = case_when(
            is.na(notes) ~ 0, 
            str_detect(tolower(notes), "carapaces saved") ~ 1, 
            .default = 0)) %>%
-  select(sample_num: squid_type, collector, notes: carapace_save) %>% 
-  relocate(sample_type:carapace_save, .before = notes)
+  select(sample_num: squid_type, collector, notes: carapace_save)
+
 
 #NS values are marked as NA so do a case when for specific coll-date (cell#) 
 #and change it to its respective date

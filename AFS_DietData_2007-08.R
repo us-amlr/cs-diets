@@ -1,6 +1,7 @@
 library(here)
 library(readxl)
 library(tidyverse)
+library(tamatoamlr)
 read_excel(path = here("diets_historical_data", "Fur Seal Diet 2007-08.xls"), 
            sheet = "Sample Contents", skip = 2, 
            range = "A14:AB125")
