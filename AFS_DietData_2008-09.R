@@ -68,7 +68,7 @@ table(SC2008_09$fish_type, useNA = "ifany")
 table(SC2008_09$squid_type, useNA = "ifany")
 table(SC2008_09$krill_type, useNA = "ifany")
 table(SC2008_09$carapace_save, useNA = "ifany")
-
+sum(duplicated(SC2008_09$sample_num)) == 0
 
 beaches <- read.csv(here("reference_tables/beaches.csv")) %>% 
   select(beach_id = ID, location = name)
