@@ -64,13 +64,16 @@ SC2011_12 <- SC2011_12_ORIG %>%
   select(sample_num: squid_type, collector, notes: carapace_save) %>%
   mutate_location()
 
-# table(SC2011_12$sample_num, useNA = "ifany")
-# table(SC2011_12$sex, useNA = "ifany")
-# table(SC2011_12$krill_type, useNA = "ifany")
-# table(SC2011_12$squid_type, useNA = "ifany")
-# table(SC2011_12$fish_type, SC2011_12$squid_type, SC2011_12$krill_type, 
-#useNA = "ifany")
-# sum(duplicated(SC2011_12$sample_num)) == 0
+table(SC2011_12$sample_num, useNA = "ifany")
+table(SC2011_12$sample_type, useNA = "ifany")
+table(SC2011_12$sex, useNA = "ifany")
+table(SC2011_12$collection_date, useNA = "ifany")
+table(SC2011_12$krill_type, useNA = "ifany")
+table(SC2011_12$squid_type, useNA = "ifany")
+table(SC2011_12$fish_type, SC2011_12$squid_type, SC2011_12$krill_type,
+useNA = "ifany")
+table(SC2011_12$carapace_save, useNA = "ifany")
+sum(duplicated(SC2011_12$sample_num)) == 0
 
 
 beaches <- read.csv(here("reference_tables/beaches.csv")) %>% 
@@ -88,16 +91,6 @@ all(is.na(SC2011_12$processor) | (SC2011_12$processor%in% observers$observer))
 # all(is.na(SC2011_12$tag) | (SC2011_12$tag%in% tags$tag))
 # table(SC2011_12$location[!(is.na(SC2011_12$location) | 
 #                              (SC2011_12$location %in% beaches$name))])
-
-table(SC2011_12$sample_num, useNA = "ifany")
-table(SC2011_12$sample_type, useNA = "ifany")
-table(SC2011_12$species, useNA = "ifany")
-table(SC2011_12$sex, useNA = "ifany")
-table(SC2011_12$collection_date, useNA = "ifany")
-table(SC2011_12$fish_type, useNA = "ifany")
-table(SC2011_12$squid_type, useNA = "ifany")
-table(SC2011_12$krill_type, useNA = "ifany")
-table(SC2011_12$carapace_save, useNA = "ifany")
 
 
 diets2011_12_todb <- SC2011_12 %>%
