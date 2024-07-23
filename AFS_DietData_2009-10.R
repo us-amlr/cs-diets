@@ -40,6 +40,11 @@ SC2009_10 <- SC2009_10_ORIG %>%
          notes = if_else(sample_num == 47, 
                          "sample_num originally labeled as 48a", notes),
          process_date = as.Date(process_date),
+         krill_type = case_when(
+           sample_num == 102 ~ "No",
+           .default = krill_type), 
+         notes = if_else(sample_num == 102, 
+                         "krill_type originally `Yes` changed to `No` because of notes stating `No krill`", notes),
          female_id = if_else(female_id == "na", NA, female_id), 
          carapace_save = 0,
          processor = NA_character_, #str_sub(Observer_Code, 1, 3),
@@ -48,8 +53,8 @@ SC2009_10 <- SC2009_10_ORIG %>%
          carapace_save = case_when(
            is.na(notes) ~ 0,
            str_detect(tolower(notes), "carapaces saved") ~ 1,
-           .default = 0)) %>%
-  select(sample_num: squid_type, processor, collector, notes: carapace_save) %>% 
+           .default = 0)) %>% 
+  select(sample_num: squid_type, processor, tag, collector, notes: carapace_save) %>%
   mutate_location()
 
 
@@ -80,14 +85,14 @@ all(is.na(SC2009_10$processor) | (SC2009_10$processor%in% observers$observer))
 
 SC2009_10$location[!(is.na(SC2009_10$location) | (SC2009_10$location %in% beaches$location))]
 
-# diets2009_10_todb <- SC2009_10 %>%
-#   left_join(beaches, by = join_by(location)) %>%
-#   left_join(tags, by = join_by(species, tag)) %>%
-#   select(-c(location, tag, female_id, observer_code)) %>% 
-#   relocate(species: tag_id, .before = notes)
+diets2009_10_todb <- SC2009_10 %>%
+  left_join(beaches, by = join_by(location)) %>%
+  left_join(tags, by = join_by(species, tag)) %>%
+  select(-c(location, tag, female_id, observer_code)) %>%
+  relocate(species: tag_id, .before = notes)
 
 #TODO: Redownload the tamatoa() package for the most up to date mutate_location()
-#before joining dfs
+#before joining dfs and SampleNum 102 has Yes for krill type which notes contradicts this
 
 #Notes--------------------------------------------------------------------------
 #Reading FALSE statement for location column argument
