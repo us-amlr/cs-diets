@@ -41,16 +41,19 @@ SC2007_08 <- SC2007_08_ORIG %>%
          fish_type = if_else(fish_type == "Y", "Yes", "No"),
          squid_type = if_else(squid_type == "Y", "Yes", "No"),
          collection_date = as.Date(collection_date), 
+         location = if_else(location == "(??)", NA, location),
          process_date = as.Date(process_date),
          female_id = if_else(female_id == " ", NA, female_id), 
          processor = NA_character_, #str_sub(Observer_Code, 1, 3), 
+         tag = str_pad(as.numeric(female_id), width = 3, pad = "0", side = "left"),
          collector = NA_character_,  carapace_save = case_when(
            is.na(notes) ~ 0, 
            str_detect(tolower(notes), "carapaces saved") ~ 1, 
            str_detect(tolower(notes), "saved 2 carapaces") ~ 1,
            .default = 0)) %>%
   filter(sample_num != "extra") %>% 
-  select(sample_num: squid_type, collector, notes: carapace_save) 
+  select(sample_num: squid_type, collector, notes: carapace_save) %>% 
+  mutate_location()
 
 table(SC2007_08$sample_num, useNA = "ifany")
 table(SC2007_08$sample_type, useNA = "ifany")
@@ -61,6 +64,7 @@ table(SC2007_08$fish_type, useNA = "ifany")
 table(SC2007_08$squid_type, useNA = "ifany")
 table(SC2007_08$krill_type, useNA = "ifany")
 table(SC2007_08$carapace_save, useNA = "ifany")
+sum(duplicated(SC2007_08$sample_num)) == 0
 
 beaches <- read.csv(here("reference_tables/beaches.csv")) %>% 
   select(beach_id = ID, location = name)
@@ -73,10 +77,8 @@ all(is.na(SC2007_08$location) | (SC2007_08$location %in% beaches$location))
 all(is.na(SC2007_08$collector) | (SC2007_08$collector %in% observers$observer))
 all(is.na(SC2007_08$processor) | (SC2007_08$processor%in% observers$observer))
 
-#TODO: "Copihue" needs to be added and Redownload tamatoa() for updated mutate_locations()
-
-# diets2007_08_todb <- SC2007_08 %>%
-#   left_join(beaches, by = join_by(location)) %>%
-#   left_join(tags, by = join_by(species, tag)) %>%
-#   select(-c(location, tag, female_id, observer_code)) %>% 
-#   relocate(species: tag_id, .before = notes)
+diets2007_08_todb <- SC2007_08 %>%
+  left_join(beaches, by = join_by(location)) %>%
+  left_join(tags, by = join_by(species, tag)) %>%
+  select(-c(location, tag, female_id, observer_code)) %>%
+  relocate(sample_type, species: tag_id, .before = notes)
