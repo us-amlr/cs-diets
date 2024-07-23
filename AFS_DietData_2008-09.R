@@ -79,9 +79,24 @@ all(is.na(SC2008_09$location) | (SC2008_09$location %in% beaches$location))
 all(is.na(SC2008_09$collector) | (SC2008_09$collector %in% observers$observer))
 all(is.na(SC2008_09$processor) | (SC2008_09$processor%in% observers$observer))
 
+#TODO: Redownload tamatoa() for updated mutate_locations()
 
 # diets2008_09_todb <- SC2008_09 %>%
 #   left_join(beaches, by = join_by(location)) %>%
 #   left_join(tags, by = join_by(species, tag)) %>%
 #   select(-c(location, tag, female_id, observer_code)) %>% 
 #   relocate(species: tag_id, .before = notes)
+
+
+
+#Notes--------------------------------------------------------------------------
+#Reading FALSE statement for location column argument
+#Running lines SC2008_09$location and beaches$location lists the locations in
+#these columns per cell
+#is.na(SC2008_09$location) | (SC2008_09$location %in% beaches$location)
+#a vector on where a TRUE statement appears or where both sides of argument are
+#FALSE like those in lines 79-92 because the locations of SC2008_09$location were
+#not found in beaches$location
+#This line  SC2008_09$location[!(is.na(SC2008_09$location) | (SC2008_09$location %in% beaches$location))]
+#gives the name output of the locations that don't appear in df in this case 
+# being "Mod Fl" or wrapping this all in a table function to give a count of missing locations
