@@ -41,6 +41,32 @@ SC2006_07 <- SC2006_07_ORIG %>%
          process_date = as.Date(process_date),  
          processor = NA_character_, #str_sub(Observer_Code, 1, 3), 
          collector = NA_character_,
-         female_id = if_else(female_id == "-", NA, female_id), 
+         female_id = if_else(female_id == "-" | female_id == "217?", NA, female_id), 
          carapace_save = "0") %>%
-  select(sample_num: squid_type, collector, notes: carapace_save)
+  select(sample_num: squid_type, collector, notes: carapace_save) %>% 
+  filter(sample_num != 54) %>% 
+  mutate_location()
+
+
+table(SC2006_07$sample_num, useNA = "ifany")
+table(SC2006_07$sample_type, useNA = "ifany")
+table(SC2006_07$species, useNA = "ifany")
+table(SC2006_07$sex, useNA = "ifany")
+table(SC2006_07$collection_date, useNA = "ifany")
+table(SC2006_07$fish_type, useNA = "ifany")
+table(SC2006_07$squid_type, useNA = "ifany")
+table(SC2006_07$krill_type, useNA = "ifany")
+table(SC2006_07$carapace_save, useNA = "ifany")
+
+
+beaches <- read.csv(here("reference_tables/beaches.csv")) %>% 
+  select(beach_id = ID, location = name)
+observers <- read.csv(here("reference_tables/observers.csv"))
+tags <- read.csv(here("reference_tables/tags.csv")) %>% 
+  filter(tag_species == "Fur seal", tag_type != "U-tag") %>% 
+  select(tag_id = ID, tag, species = tag_species)
+
+all(is.na(SC2006_07$location) | (SC2006_07$location %in% beaches$location))
+all(is.na(SC2006_07$collector) | (SC2006_07$collector %in% observers$observer))
+all(is.na(SC2006_07$processor) | (SC2006_07$processor%in% observers$observer))
+
