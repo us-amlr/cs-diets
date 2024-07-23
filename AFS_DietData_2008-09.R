@@ -50,6 +50,7 @@ SC2008_09 <- SC2008_09_ORIG %>%
          female_id = if_else(female_id == "n/a", NA, female_id), 
          processor = NA_character_, #str_sub(observer_code, 1, 3), 
          collector = NA_character_, 
+         tag = str_pad(as.numeric(female_id), width = 3, pad = "0", side = "left"),
          carapace_save = case_when(
            is.na(notes) ~ 0, 
            str_detect(tolower(notes), "carapaces saved") ~ 1, 
@@ -82,11 +83,11 @@ all(is.na(SC2008_09$processor) | (SC2008_09$processor%in% observers$observer))
 
 #TODO: Redownload tamatoa() for updated mutate_locations()
 
-# diets2008_09_todb <- SC2008_09 %>%
-#   left_join(beaches, by = join_by(location)) %>%
-#   left_join(tags, by = join_by(species, tag)) %>%
-#   select(-c(location, tag, female_id, observer_code)) %>% 
-#   relocate(species: tag_id, .before = notes)
+diets2008_09_todb <- SC2008_09 %>%
+  left_join(beaches, by = join_by(location)) %>%
+  left_join(tags, by = join_by(species, tag)) %>%
+  select(-c(location, tag, female_id, observer_code)) %>%
+  relocate(sample_type, species: tag_id, .before = notes)
 
 
 
