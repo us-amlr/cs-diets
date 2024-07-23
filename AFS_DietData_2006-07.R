@@ -38,7 +38,8 @@ SC2006_07 <- SC2006_07_ORIG %>%
          fish_type = if_else(fish_type == "Y", "Yes", "No"),
          squid_type = if_else(squid_type == "Y", "Yes", "No"),
          collection_date = as.Date(collection_date), 
-         process_date = as.Date(process_date),  
+         process_date = as.Date(process_date),
+         tag = str_pad(as.numeric(female_id), width = 3, pad = "0", side = "left"),
          processor = NA_character_, #str_sub(Observer_Code, 1, 3), 
          collector = NA_character_,
          female_id = if_else(female_id == "-" | female_id == "217?", NA, female_id), 
@@ -57,6 +58,7 @@ table(SC2006_07$fish_type, useNA = "ifany")
 table(SC2006_07$squid_type, useNA = "ifany")
 table(SC2006_07$krill_type, useNA = "ifany")
 table(SC2006_07$carapace_save, useNA = "ifany")
+sum(duplicated(SC2006_07$sample_num)) == 0
 
 
 beaches <- read.csv(here("reference_tables/beaches.csv")) %>% 
@@ -69,4 +71,10 @@ tags <- read.csv(here("reference_tables/tags.csv")) %>%
 all(is.na(SC2006_07$location) | (SC2006_07$location %in% beaches$location))
 all(is.na(SC2006_07$collector) | (SC2006_07$collector %in% observers$observer))
 all(is.na(SC2006_07$processor) | (SC2006_07$processor%in% observers$observer))
+
+diets2006_07_todb <- SC2006_07 %>%
+  left_join(beaches, by = join_by(location)) %>%
+  left_join(tags, by = join_by(species, tag)) %>%
+  select(-c(location, tag, female_id, observer_code)) %>% 
+  relocate(sample_type, species: tag_id, .before = notes)
 
