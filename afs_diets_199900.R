@@ -71,6 +71,7 @@ diets <- diets.orig %>%
                                  sample_type == "E" ~ "Enema", 
                                  sample_type == "V" ~ "Vomitus", 
                                  .default = NA_character_), 
+         collection_date = as.Date(collection_date), 
          collector = NA_character_,
          processor = NA_character_,
          krill_type = if_else(krill_type == "Y", "Yes", "No"),

@@ -151,7 +151,9 @@ table(diets$location[!(is.na(diets$location) |
 diets.todb <- diets %>% 
   left_join(beaches, by = join_by(location)) %>% 
   left_join(tags, by = join_by(species, tag)) %>% 
-  select(-c(location, tag))
+  # TODO: fix
+  mutate(collector  = NA_character_) %>% 
+  select(-c(location, tag, season_name))
 
 #-------------------------------------------------------------------------------
 # NOTE: no krill carapace length or otolith count data for 1998/99
