@@ -1,6 +1,7 @@
 library(here)
 library(readxl)
 library(tidyverse)
+library(tamatoamlr)
 read_excel(path = here("diets_historical_data", "Fur Seal Diet 2002-03.xls"), 
            sheet = "Sample Contents", skip = 2, 
            range = "A3:AA106")
@@ -64,15 +65,35 @@ SC2002_03 <- SC2002_03_ORIG %>%
          notes: carapace_save) %>% 
   mutate_location()
 
+table(SC2002_03$sample_num, useNA = "ifany")
+table(SC2002_03$sample_type, useNA = "ifany")
+table(SC2002_03$species, useNA = "ifany")
+table(SC2002_03$sex, useNA = "ifany")
+table(SC2002_03$collection_date, useNA = "ifany")
+table(SC2002_03$fish_type, useNA = "ifany")
+table(SC2002_03$squid_type, useNA = "ifany")
+table(SC2002_03$krill_type, useNA = "ifany")
+table(SC2002_03$carapace_save, useNA = "ifany")
 
-table(SC2008_09$sample_num, useNA = "ifany")
-table(SC2008_09$sample_type, useNA = "ifany")
-table(SC2008_09$species, useNA = "ifany")
-table(SC2008_09$sex, useNA = "ifany")
-table(SC2008_09$collection_date, useNA = "ifany")
-table(SC2008_09$fish_type, useNA = "ifany")
-table(SC2008_09$squid_type, useNA = "ifany")
-table(SC2008_09$krill_type, useNA = "ifany")
-table(SC2008_09$carapace_save, useNA = "ifany")
+sum(duplicated(SC2002_03$sample_num)) == 0
 
+
+beaches <- read.csv(here("reference_tables/beaches.csv")) %>% 
+  select(beach_id = ID, location = name)
+observers <- read.csv(here("reference_tables/observers.csv"))
+tags <- read.csv(here("reference_tables/tags.csv")) %>% 
+  filter(tag_species == "Fur seal", tag_type != "U-tag") %>% 
+  select(tag_id = ID, tag, species = tag_species)
+
+all(is.na(SC2002_03$location) | (SC2002_03$location %in% beaches$location))
+all(is.na(SC2002_03$collector) | (SC2002_03$collector %in% observers$observer))
+all(is.na(SC2002_03$processor) | (SC2002_03$processor%in% observers$observer))
+
+SC2002_03$location[!(is.na(SC2002_03$location) | (SC2002_03$location %in% beaches$location))]
+
+# diets2002_03_todb <- SC2002_03 %>%
+#   left_join(beaches, by = join_by(location)) %>%
+#   left_join(tags, by = join_by(species, tag)) %>%
+#   select(-c(location, tag, female_id, observer_code)) %>%
+#   relocate(species: tag_id, .before = notes)
 #103/313 str_sub() to just include 103 femaleID
