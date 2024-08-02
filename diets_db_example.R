@@ -10,25 +10,36 @@ diets <- tbl(con, "vDiets") %>% collect()
 diets.scat <- diets %>% 
   filter(sample_type %in% c("scat", "Scat"))
 
-scat.diet.plot <- diets.scat %>%
-  pivot_longer(cols = krill_type:squid_type,
-               names_to = "Species",
-               values_to = "Presence") %>%
-  group_by(season_name, Species) %>%
-  summarize(Presence_in_Collection = sum(Presence == "Yes")) #%>%
-  #mutate(prey.prop = Species/)
-#Add a proportion column on here
+
 ?pivot_longer
 
 
-#Do a proportion plot for seasons instead to visualize better
-ggplot(scat.diet.plot, aes(fill = Species, x = season_name, y = Presence_in_Collection)) +
-  geom_bar(stat = "identity", position = "dodge", width = 0.8) +
- # scale_fill_manual(values = c("bisque4", "indianred3", "lavenderblush")) +
-  xlab(label = "Season Year") + ggtitle(label = "Prey Species Presence per Season") +
-  scale_fill_discrete(name = "Prey Type", labels = c("Fish", "Krill", "Squid")) +
-  theme(plot.title = element_text(hjust = 0.5), axis.title.y = element_text(size = 9),
-        axis.title.x = element_text(size = 8)) + scale_x_discrete(guide = guide_axis(angle = 90))
+diets.scat %>%
+  pivot_longer(
+    cols = krill_type:squid_type,
+    names_to = "Species",
+    values_to = "Presence"
+  ) %>%
+  group_by(season_name, Species) %>%
+  summarize(Presence_in_Collection = sum(Presence == "Yes")) %>%
+  group_by(season_name) %>%
+  mutate(prop.prey = Presence_in_Collection / sum(Presence_in_Collection)) %>%
+  ungroup() %>%
+  mutate(Species = stringi::stri_trans_totitle(gsub('_type', '', Species))) %>%
+  ggplot(aes(season_name, prop.prey)) +
+  geom_bar(aes(fill = Species), stat = 'identity', position = 'stack') +
+  scale_fill_manual(
+    name = "Prey Type", 
+    values = c(Fish = "bisque4", Krill = "indianred3", Squid = "lavenderblush")
+  ) +
+  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  labs(x = "Season Year", y = "Proportion", title = "Prey Species Presence per Season") +
+  theme(
+    plot.title = element_text(hjust = 0.5), 
+    axis.title.y = element_text(size = 9),
+    axis.title.x = element_text(size = 8)
+  ) 
+
 
 # p2 <- ggplot(scat.diet.plot, aes(x=season_name, y=`Number of Scats`)) +
 #   geom_bar(stat = "identity") +
@@ -38,8 +49,8 @@ ggplot(scat.diet.plot, aes(fill = Species, x = season_name, y = Presence_in_Coll
 
 
 ## Scat count per Season
-ggplot(diets.scat, aes(x = season_name)) +
-  geom_bar(stat = "identity")
+# ggplot(diets.scat, aes(x = season_name)) +
+#   geom_bar(stat = "identity")
 
 xy <- ggplot(diets.scat, aes(x = season_name)) +
   geom_bar(fill = "coral4") 
@@ -50,3 +61,10 @@ xy + scale_x_discrete(guide = guide_axis(angle = 90)) +
   xlab(label = "Season Year") + ylab(label = "Number of Scats") +
   scale_y_continuous(limits = c(0, 140),
                      breaks = seq(0, 140, 20))
+
+
+
+#downloading as csv
+# write.csv(diets.scat, "diets.scat.csv")
+# getwd()
+# ?write.csv
