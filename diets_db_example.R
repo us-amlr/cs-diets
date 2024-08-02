@@ -15,21 +15,20 @@ scat.diet.plot <- diets.scat %>%
                names_to = "Species",
                values_to = "Presence") %>%
   group_by(season_name, Species) %>%
-  summarize(`Presence in Collection` = sum(Presence == "Yes")) #%>%
+  summarize(Presence_in_Collection = sum(Presence == "Yes")) #%>%
   #mutate(prey.prop = Species/)
 #Add a proportion column on here
 ?pivot_longer
 
+
 #Do a proportion plot for seasons instead to visualize better
-ggplot(scat.diet.plot, aes(fill = Species, x = season_name, y =`Presence in Collection`)) +
+ggplot(scat.diet.plot, aes(fill = Species, x = season_name, y = Presence_in_Collection)) +
   geom_bar(stat = "identity", position = "dodge", width = 0.8) +
  # scale_fill_manual(values = c("bisque4", "indianred3", "lavenderblush")) +
   xlab(label = "Season Year") + ggtitle(label = "Prey Species Presence per Season") +
   scale_fill_discrete(name = "Prey Type", labels = c("Fish", "Krill", "Squid")) +
   theme(plot.title = element_text(hjust = 0.5), axis.title.y = element_text(size = 9),
         axis.title.x = element_text(size = 8)) + scale_x_discrete(guide = guide_axis(angle = 90))
-
-
 
 # p2 <- ggplot(scat.diet.plot, aes(x=season_name, y=`Number of Scats`)) +
 #   geom_bar(stat = "identity") +
