@@ -30,14 +30,14 @@ diets.scat %>%
   geom_bar(aes(fill = Species), stat = 'identity', position = 'stack') +
   scale_fill_manual(
     name = "Prey Type", 
-    values = c(Fish = "bisque4", Krill = "indianred3", Squid = "lavenderblush")
+    values = c(Krill = "indianred3", Fish = "bisque4", Squid = "thistle")
   ) +
   scale_x_discrete(guide = guide_axis(angle = 90)) +
-  labs(x = "Season Year", y = "Proportion", title = "Prey Species Presence per Season") +
+  labs(x = "Season Year", y = "Proportion", title = "Proportion of Prey Species in Scat") +
   theme(
     plot.title = element_text(hjust = 0.5), 
     axis.title.y = element_text(size = 9),
-    axis.title.x = element_text(size = 8)
+    axis.title.x = element_text(size = 9)
   ) 
 
 
@@ -53,7 +53,7 @@ diets.scat %>%
 #   geom_bar(stat = "identity")
 
 xy <- ggplot(diets.scat, aes(x = season_name)) +
-  geom_bar(fill = "coral4") 
+  geom_bar(fill = "tomato4") 
 
 xy + scale_x_discrete(guide = guide_axis(angle = 90)) +
   ggtitle(label = "Scat Collections per Season") + 
