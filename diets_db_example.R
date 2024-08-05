@@ -14,7 +14,7 @@ diets.scat <- diets %>%
 ?pivot_longer
 
 
-diets.scat %>%
+diets.prop <- diets.scat %>%
   pivot_longer(
     cols = krill_type:squid_type,
     names_to = "Species",
@@ -25,8 +25,9 @@ diets.scat %>%
   group_by(season_name) %>%
   mutate(prop.prey = Presence_in_Collection / sum(Presence_in_Collection)) %>%
   ungroup() %>%
-  mutate(Species = stringi::stri_trans_totitle(gsub('_type', '', Species))) %>%
-  ggplot(aes(season_name, prop.prey)) +
+  mutate(Species = stringi::stri_trans_totitle(gsub('_type', '', Species))) 
+
+diets.prop %>% ggplot(aes(season_name, prop.prey)) +
   geom_bar(aes(fill = Species), stat = 'identity', position = 'stack') +
   scale_fill_manual(
     name = "Prey Type", 
@@ -45,7 +46,6 @@ diets.scat %>%
 #   geom_bar(stat = "identity") +
 #   facet_wrap(~Species)
 # p2
-
 
 
 ## Scat count per Season
