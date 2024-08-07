@@ -45,6 +45,7 @@ SC2005_06 <- SC2005_06_ORIG %>%
          collector = NA_character_, carapace_save = 0, 
          tag = str_pad(as.numeric(female_id), width = 3, pad = "0", side = "left")) %>%
   select(sample_num: squid_type, processor, tag, collector, notes: carapace_save) %>%
+  filter(sample_num != 20.5) %>% 
   mutate_location()
 
 
