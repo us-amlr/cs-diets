@@ -81,3 +81,4 @@ diets2005_06_todb <- SC2005_06 %>%
   left_join(tags, by = join_by(species, tag)) %>%
   select(-c(location, tag, female_id, observer_code)) %>%
   relocate(sample_type, species: tag_id, .before = notes)
+

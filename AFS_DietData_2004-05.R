@@ -1,6 +1,7 @@
 library(here)
 library(readxl)
 library(tidyverse)
+library(tamatoamlr)
 read_excel(path = here("diets_historical_data", "Fur Seal Diet 2004-05.xls"), 
            sheet = "Sample Contents", skip = 2, 
            range = "A3:X116")
@@ -8,7 +9,7 @@ read_excel(path = here("diets_historical_data", "Fur Seal Diet 2004-05.xls"),
 SC2004_05_ORIG <- read_excel(
   path = here("diets_historical_data", "Fur Seal Diet 2004-05.xls"), 
   sheet = "Sample Contents", skip = 2, 
-  range = "A3:X116", col_types = c("numeric", "numeric", "date",
+  range = "A3:X116", col_types = c("numeric", "text", "date",
                                    "text", "text", "date",
                                    rep("text", 4), rep("numeric", 13), 
                                    "text"))
@@ -34,17 +35,30 @@ SC2004_05 <- SC2004_05_ORIG %>%
          notes = ...24) %>%
   select(sample_num: squid_type, notes) %>% 
   mutate(sample_type = "scat", species = "Fur seal", sex = "F",
-         krill_type = if_else(krill_type == "Y", "Yes", "No"), 
-         fish_type = if_else(fish_type == "Y", "Yes", "No"),
-         squid_type = if_else(squid_type == "Y", "Yes", "No"),
+         krill_type = case_when(
+           is.na(krill_type) ~ "No", 
+           krill_type == "Y" ~ "Yes", 
+           .default = "No"),
+         fish_type = case_when(
+           is.na(fish_type) ~ "No",
+           fish_type == "Y" ~ "Yes",
+           .default = "No"),
+         squid_type = case_when(
+           is.na(squid_type) ~ "No",
+           squid_type == "Y" ~ "Yes",
+           .default = "No"),
+         sample_num = if_else(sample_num == 'Extra #1', '111', sample_num),
+         sample_num = if_else(sample_num == 'Extra #2', '112', sample_num),
+         sample_num = if_else(sample_num == 'Extra #3', '113', sample_num),
+         sample_num = as.numeric(sample_num), 
          collection_date = as.Date(collection_date),
          process_date = as.Date(process_date),
-         female_id = if_else(female_id == "-", NA, female_id), 
+         female_id = if_else(female_id == "-" | female_id == "likely 082", NA, female_id), 
          tag = str_pad(as.numeric(female_id), width = 3, pad = "0", side = "left"),
-         processor = str_sub(observer_code, 1, 3), 
+         processor = NA_character_, #str_sub(observer_code, 1, 3), 
          collector = NA_character_, carapace_save = "0") %>%
   select(sample_num: squid_type, collector, notes: carapace_save) %>% 
-  relocate(sample_type:carapace_save, .before = notes)
+  mutate_location()
 
 
 table(SC2004_05$sample_num, useNA = "ifany")
@@ -74,8 +88,8 @@ all(is.na(SC2004_05$processor) | (SC2004_05$processor%in% observers$observer))
 
 SC2004_05$location[!(is.na(SC2004_05$location) | (SC2004_05$location %in% beaches$location))]
 
-# diets2004_05_todb <- SC2004_05 %>%
-#   left_join(beaches, by = join_by(location)) %>%
-#   left_join(tags, by = join_by(species, tag)) %>%
-#   select(-c(location, tag, female_id, observer_code)) %>%
-#   relocate(species: tag_id, .before = notes)
+diets2004_05_todb <- SC2004_05 %>%
+  left_join(beaches, by = join_by(location)) %>%
+  left_join(tags, by = join_by(species, tag)) %>%
+  select(-c(location, tag, female_id, observer_code)) %>%
+  relocate(species: tag_id, sample_type, .before = notes)

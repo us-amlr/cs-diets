@@ -10,7 +10,7 @@ SC2003_04_ORIG <- read_excel(
   path = here("diets_historical_data", "Fur Seal Diet 2003-04.xls"), 
   sheet = "Sample Contents", skip = 2, 
   range = "A3:Z115", 
-  col_types = c("numeric", "numeric", "date",
+  col_types = c("numeric", "text", "date",
                 "text", "text", "date",
                 rep("text", 4), rep("numeric", 8), 
                 "text", rep("numeric", 6), "text")
@@ -39,6 +39,8 @@ SC2003_04 <- SC2003_04_ORIG %>%
          fish_type = if_else(fish_type == "Y", "Yes", "No"), 
          squid_type = if_else(squid_type == "Y", "Yes", "No"), 
          female_id = if_else(female_id == "-", NA, female_id),
+         sample_num = if_else(sample_num == "30a", "112", sample_num),
+         sample_num = as.numeric(sample_num),
          collection_date = as.Date(collection_date), 
          process_date = as.Date(process_date), 
          tag = str_pad(as.numeric(female_id), width = 3, pad = "0", side = "left"),
@@ -73,9 +75,9 @@ all(is.na(SC2003_04$collector) | (SC2003_04$collector %in% observers$observer))
 all(is.na(SC2003_04$processor) | (SC2003_04$processor%in% observers$observer))
 
 SC2003_04$location[!(is.na(SC2003_04$location) | (SC2003_04$location %in% beaches$location))]
-# 
-# diets2003_04_todb <- SC2003_04 %>%
-#   left_join(beaches, by = join_by(location)) %>%
-#   left_join(tags, by = join_by(species, tag)) %>%
-#   select(-c(location, tag, female_id, observer_code)) %>%
-#   relocate(species: tag_id, .before = notes)
+
+diets2003_04_todb <- SC2003_04 %>%
+  left_join(beaches, by = join_by(location)) %>%
+  left_join(tags, by = join_by(species, tag)) %>%
+  select(-c(location, tag, female_id, observer_code)) %>%
+  relocate(species: tag_id, sample_type, .before = notes)
