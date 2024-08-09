@@ -4,13 +4,13 @@ library(tidyverse)
 library(tamatoamlr)
 read_excel(path = here("diets_historical_data", "Fur Seal Diet 2002-03.xls"), 
            sheet = "Sample Contents", skip = 2, 
-           range = "A3:AA106")
+           range = "A3:AA94")
 
 SC2002_03_ORIG <- read_excel(
   path = here("diets_historical_data", "Fur Seal Diet 2002-03.xls"), 
   sheet = "Sample Contents", skip = 2, 
-  range = "A3:AA106", 
-  col_types = c("numeric", "numeric", "date",
+  range = "A3:AA94", 
+  col_types = c("numeric", "text", "date",
                 "text", "text", "date",
                 rep("text", 4), rep("numeric", 16), 
                 "text")
@@ -41,6 +41,7 @@ SC2002_03 <- SC2002_03_ORIG %>%
     otolith_slides = ...26, 
     notes = Notes) %>% 
   select(sample_num: krill_type, fish_type, squid_type, notes) %>%
+  filter(sample_num != "E1") %>% 
   mutate(sample_type = "scat", species = "Fur seal", sex = "F",
          observer_code = NA,
          krill_type = if_else(krill_type == "Yes"| krill_type == "Y"
@@ -50,19 +51,24 @@ SC2002_03 <- SC2002_03_ORIG %>%
          female_id = if_else(female_id == "no id", NA, female_id),
          collection_date = as.Date(collection_date), 
          process_date = as.Date(process_date),
-         female_id = str_sub(female_id, 1, 3),
-         # notes = if_else(female_id == 103,
-         #                 "female_id originally labeled as 103/313 might have
-         #                 been a retagging", notes), 
-         #TODO (This is overriding previos notes cell info)
+         female_id = str_sub(female_id, 1, 3), notes = if_else(
+           female_id == 103, paste0(notes,
+                                    "; female_id originally labeled as 103/313 might have
+                         been a retagging"), notes),
          processor = NA_character_, #str_sub(observer_code, 1, 3), 
          collector = NA_character_,
+         sample_num = as.numeric(sample_num),
+         tag = str_pad(as.numeric(female_id), width = 3, pad = "0", side = "left"),
+         collection_date = case_when(
+           sample_num == 67 ~ ymd("2003-02-07"),
+           .default = as.Date(collection_date)),
          carapace_save = case_when(
            is.na(notes) ~ 0, 
            str_detect(tolower(notes), "carapaces saved") ~ 1, 
            .default = 0)) %>%
   select(sample_num: krill_type, fish_type, squid_type,
          notes: carapace_save) %>% 
+  filter(sample_num != 37) %>% 
   mutate_location()
 
 table(SC2002_03$sample_num, useNA = "ifany")
@@ -91,9 +97,9 @@ all(is.na(SC2002_03$processor) | (SC2002_03$processor%in% observers$observer))
 
 SC2002_03$location[!(is.na(SC2002_03$location) | (SC2002_03$location %in% beaches$location))]
 
-# diets2002_03_todb <- SC2002_03 %>%
-#   left_join(beaches, by = join_by(location)) %>%
-#   left_join(tags, by = join_by(species, tag)) %>%
-#   select(-c(location, tag, female_id, observer_code)) %>%
-#   relocate(species: tag_id, .before = notes)
+diets2002_03_todb <- SC2002_03 %>%
+  left_join(beaches, by = join_by(location)) %>%
+  left_join(tags, by = join_by(species, tag)) %>%
+  select(-c(location, tag, female_id, observer_code)) %>%
+  relocate(species: tag_id, .before = notes)
 #103/313 str_sub() to just include 103 femaleID
