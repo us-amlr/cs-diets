@@ -10,7 +10,7 @@ SC2001_02_ORIG <- read_excel(
   path = here("diets_historical_data", "Fur Seal Diet 2001-02.xls"), 
   sheet = "Sample Log", skip = 2, 
   range = "A15:U130", 
-  col_types = c("numeric", "numeric", "date",
+  col_types = c("text", "text", "date",
                 "text", "text", "date",
                 rep("text", 3), rep("numeric", 11), 
                 "text")
@@ -37,6 +37,7 @@ SC2001_02 <- SC2001_02_ORIG %>%
          krill_type = if_else(krill_type == "Y", "Yes", "No"), 
          fish_type = if_else(fish_type == "Y", "Yes", "No"), 
          squid_type = if_else(squid_type == "Y", "Yes", "No"),
+         location = if_else(location == "\"-\"", NA, location),
          female_id = if_else(female_id == "\"-\"", NA, female_id),
          collection_date = as.Date(collection_date), 
          process_date = as.Date(process_date), 
@@ -44,6 +45,9 @@ SC2001_02 <- SC2001_02_ORIG %>%
          processor = str_sub(observer_code, 1, 3), 
          collector = NA_character_,
          carapace_save = "0") %>%
+  filter(!(week_num %in% c("PTT-Scat", "Enema"))) %>% 
+  filter(!(sample_num %in% c("V1", "V2", "V3", "V4", "V5", "V6"))) %>% 
+  mutate(sample_num = as.numeric(sample_num)) %>%
   select(sample_num: squid_type,
          notes: carapace_save) %>% 
   mutate_location()
@@ -76,8 +80,8 @@ all(is.na(SC2001_02$processor) | (SC2001_02$processor%in% observers$observer))
 
 SC2001_02$location[!(is.na(SC2001_02$location) | (SC2001_02$location %in% beaches$location))]
 
-# diets2001_02_todb <- SC2001_02 %>%
-#   left_join(beaches, by = join_by(location)) %>%
-#   left_join(tags, by = join_by(species, tag)) %>%
-#   select(-c(location, tag, female_id, observer_code)) %>%
-#   relocate(species: tag_id, .before = notes)
+diets2001_02_todb <- SC2001_02 %>%
+  left_join(beaches, by = join_by(location)) %>%
+  left_join(tags, by = join_by(species, tag)) %>%
+  select(-c(location, tag, female_id, observer_code)) %>%
+  relocate(species: tag_id, sample_type, .before = notes)
