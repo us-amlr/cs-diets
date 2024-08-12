@@ -38,6 +38,8 @@ SC2000_01 <- SC2000_01_ORIG %>%
          fish_type = if_else(fish_type == "Y", "Yes", "No"), 
          squid_type = if_else(squid_type == "Y", "Yes", "No"),
          female_id = if_else(female_id == "-", NA, female_id),
+         sample_num = if_else(sample_num == 47 & location == "Cach-e", 
+                         105, sample_num),
          collection_date = as.Date(collection_date), 
          process_date = as.Date(process_date), 
          processor = str_sub(observer_code, 1, 3), 
