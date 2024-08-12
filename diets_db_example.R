@@ -8,33 +8,51 @@ con <- dbConnect(odbc(), filedsn = here("dsn/amlr-pinniped-db-test.dsn"))
 diets <- tbl(con, "vDiets") %>% collect()
 
 diets.scat <- diets %>% 
-  filter(sample_type %in% c("scat", "Scat"))
+  filter(sample_type %in% c("scat", "Scat")) %>% 
+  filter(!(sex %in% "M"))
 
 
 ?pivot_longer
 
 
-diets.prop <- diets.scat %>%
+diets.freq <- diets.scat %>%
   pivot_longer(
     cols = krill_type:squid_type,
     names_to = "Species",
     values_to = "Presence"
   ) %>%
-  group_by(season_name, Species) %>%
+  group_by(season_name) %>%
+  mutate(n_scats = n_distinct(sample_num)) %>% 
+  group_by(season_name, n_scats, Species) %>%
   summarize(Presence_in_Collection = sum(Presence == "Yes")) %>%
   group_by(season_name) %>%
-  mutate(prop.prey = Presence_in_Collection / sum(Presence_in_Collection)) %>%
+  mutate(prop.prey = Presence_in_Collection / sum(Presence_in_Collection), 
+         freq_prey = Presence_in_Collection / n_scats) %>%
   ungroup() %>%
   mutate(Species = stringi::stri_trans_totitle(gsub('_type', '', Species))) 
 
-diets.prop %>% ggplot(aes(season_name, prop.prey)) +
-  geom_bar(aes(fill = Species), stat = 'identity', position = 'stack') +
+# diets.prop %>% ggplot(aes(season_name, prop.prey)) +
+#   geom_bar(aes(fill = Species), stat = 'identity', position = 'stack') +
+#   scale_fill_manual(
+#     name = "Prey Type", 
+#     values = c(Krill = "indianred3", Fish = "bisque4", Squid = "thistle")
+#   ) +
+#   scale_x_discrete(guide = guide_axis(angle = 90)) +
+#   labs(x = "Season Year", y = "Proportion", title = "Proportion of Prey Species in Scat") +
+#   theme(
+#     plot.title = element_text(hjust = 0.5), 
+#     axis.title.y = element_text(size = 9),
+#     axis.title.x = element_text(size = 9)
+#   ) 
+diets.freq %>% 
+  ggplot(aes(season_name, freq_prey)) +
+  geom_bar(aes(fill = Species), stat = 'identity', position = 'dodge') +
   scale_fill_manual(
     name = "Prey Type", 
     values = c(Krill = "indianred3", Fish = "bisque4", Squid = "thistle")
   ) +
   scale_x_discrete(guide = guide_axis(angle = 90)) +
-  labs(x = "Season Year", y = "Proportion", title = "Proportion of Prey Species in Scat") +
+  labs(x = "Season Year", y = "Frequency", title = "Frequency of Prey Species in Scat") +
   theme(
     plot.title = element_text(hjust = 0.5), 
     axis.title.y = element_text(size = 9),
@@ -51,6 +69,14 @@ diets.prop %>% ggplot(aes(season_name, prop.prey)) +
 ## Scat count per Season
 # ggplot(diets.scat, aes(x = season_name)) +
 #   geom_bar(stat = "identity")
+# 
+# library(dplyr)
+# library(odbc)
+# library(here)
+# library(tidyverse)
+
+# diets.scat <- diets %>% 
+#   filter(sample_type %in% c("scat", "Scat"))
 
 xy <- ggplot(diets.scat, aes(x = season_name)) +
   geom_bar(fill = "tomato4") 

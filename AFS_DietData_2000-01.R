@@ -78,8 +78,8 @@ all(is.na(SC2000_01$processor) | (SC2000_01$processor%in% observers$observer))
 
 SC2000_01$location[!(is.na(SC2000_01$location) | (SC2000_01$location %in% beaches$location))]
 
-# diets2009_10_todb <- SC2000_01 %>%
-#   left_join(beaches, by = join_by(location)) %>%
-#   left_join(tags, by = join_by(species, tag)) %>%
-#   select(-c(location, tag, female_id, observer_code)) %>%
-#   relocate(species: tag_id, .before = notes)
+diets2000_01_todb <- SC2000_01 %>%
+  left_join(beaches, by = join_by(location)) %>%
+  left_join(tags, by = join_by(species, tag)) %>%
+  select(-c(location, tag, female_id, observer_code)) %>%
+  relocate(species: tag_id, sample_type, .before = notes)
