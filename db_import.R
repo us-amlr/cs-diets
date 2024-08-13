@@ -19,8 +19,8 @@ tbl(con, "vDiets") %>%
 ### Source the file to import
 # source("afs_diets_199899.R", local = TRUE)
 # source("afs_diets_199900.R", local = TRUE)
-# source("AFS_DietData_2000-01.R", local = TRUE); todb <- diets2000_01_todb
-source("AFS_DietData_2001-02.R", local = TRUE); todb <- diets2001_02_todb
+source("AFS_DietData_2000-01.R", local = TRUE); todb <- diets2000_01_todb
+# source("AFS_DietData_2001-02.R", local = TRUE); todb <- diets2001_02_todb
 # source("AFS_DietData_2002-03.R", local = TRUE)
 # source("AFS_DietData_2003-04.R", local = TRUE)
 # source("AFS_DietData_2004-05.R", local = TRUE)

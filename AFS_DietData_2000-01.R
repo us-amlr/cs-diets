@@ -34,6 +34,11 @@ SC2000_01 <- SC2000_01_ORIG %>%
          sample_type = Type, notes = Obs.) %>% 
   mutate(species = "Fur seal", sex = "F",
          observer_code = NA,
+         sample_type = case_when(
+           sample_type == "E" ~ "Enema", 
+           sample_type == "S" ~ "Scat", 
+           .default = NA_character_
+         ), 
          krill_type = if_else(krill_type == "Y", "Yes", "No"), 
          fish_type = if_else(fish_type == "Y", "Yes", "No"), 
          squid_type = if_else(squid_type == "Y", "Yes", "No"),
