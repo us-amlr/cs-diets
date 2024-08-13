@@ -46,10 +46,10 @@ diets.freq <- diets.scat %>%
 #   ) 
 diets.freq %>% 
   ggplot(aes(season_name, freq_prey)) +
-  geom_bar(aes(fill = Species), stat = 'identity', position = 'dodge') +
+  geom_bar(aes(fill = Species), stat = 'identity', position = 'dodge') + theme_bw() +
   scale_fill_manual(
     name = "Prey Type", 
-    values = c(Krill = "indianred3", Fish = "bisque4", Squid = "thistle")
+    values = c(Krill = "indianred4", Fish = "bisque4", Squid = "peru")
   ) +
   scale_x_discrete(guide = guide_axis(angle = 90)) +
   labs(x = "Season Year", y = "Frequency", title = "Frequency of Prey Species in Scat") +
@@ -87,7 +87,6 @@ xy + scale_x_discrete(guide = guide_axis(angle = 90)) +
   xlab(label = "Season Year") + ylab(label = "Number of Scats") +
   scale_y_continuous(limits = c(0, 140),
                      breaks = seq(0, 140, 20))
-
 
 
 #downloading as csv
